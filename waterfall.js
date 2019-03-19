@@ -1,8 +1,8 @@
 
-var margin = {top: 60, right: 10, bottom: 80, left: 73};
+var margin = {top: 160, right: 10, bottom: 80, left: 70};
 
 var width = 960 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom;
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -56,7 +56,7 @@ d3.csv("sample_data.csv").then(function(dataset){
         .attr("x", (d,i) => i * (width / dataset.length))
         .attr("y", d => yScale(Math.max(d.start, d.end)))
         .attr("height", d => Math.abs(yScale(d.end) - yScale(d.start)))
-        .attr("width", (width / dataset.length)-8)
+        .attr("width", (width / dataset.length)-20)
         .attr('fill', function(d){
             if(d.Category == 'Last Year' || d.Category == 'Current Year'){
                 return '#BFB8BF';
@@ -80,7 +80,7 @@ d3.csv("sample_data.csv").then(function(dataset){
         .data(dataset)
         .enter()
         .append("text")
-        .attr("x", function(d, i){ return i * (width / dataset.length) + 16; })
+        .attr("x", function(d, i){ return i * (width / dataset.length) + 10; })
         .attr("y", d => yScale(Math.max(d.start, d.end)))
         .text(function(d){
             if (d.PctChg != 0){
@@ -101,18 +101,65 @@ d3.csv("sample_data.csv").then(function(dataset){
         .data(dataset)
         .enter()
         .append("text")
-        .attr("x", (d,i) => i * (width / dataset.length))
+        .attr("x", (d,i) => i * (width / dataset.length) + 25)
         .attr("y", height / 2)
         .text(function(d){
             if (d.Category == 'Last Year' || d.Category == 'Current Year'){
-                let volume = d.Volume;
+                let volume = d.end;
                 return volume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             };
         })
         .attr("fill", "#231F20")
         .attr("text-anchor", "middle");
 
+    // create connector lines
+    svg.append('g').selectAll('line')
+        .data(dataset.filter(d => d.Category != 'Current Year'))
+        .enter()
+        .append('line')
+        .attr("class", "connector")
+        .attr("x1", (d,i) => i * (width/dataset.length) + ((width / dataset.length)-20))
+        .attr("y1", d => yScale(d.end))
+        .attr("x2", (d,i) => (i+1) * (width/dataset.length))
+        .attr("y2", d => yScale(d.end));
 
+    // creating the year-over-year change vertical lines
+    svg.append("g").selectAll('line')
+        .data(dataset)
+        .enter()
+        .append('line')
+        .attr("class", function(d){
+            if (d.Category == 'Last Year' || d.Category == 'Current Year') {
+                return "YoY";
+            } else{
+                return "none";
+            };
+        })
+        .attr("y1", d => yScale(d.end))
+        .attr("y2", -(margin.top/2))
+        .attr("x1", (d,i) => (i * width / dataset.length) + 30)
+        .attr("x2", (d,i) => (i * width / dataset.length) + 30);
+
+
+    // creating the year-over-year change horizontal line
+    svg.append("g").selectAll('line')
+        .data(dataset)
+        .enter()
+        .append('line')
+        .attr("class", function(d){
+            if (d.Category == 'Last Year' || d.Category == 'Current Year') {
+                return "YoY";
+            } else{
+                return "none";
+            };
+        })
+        .attr("y1", -(margin.top/2))
+        .attr("y2", -(margin.top/2))
+        .attr("x1", margin.left / 2 - 5.5)
+        .attr("x2", width - 42.5);
+
+
+    // add the year-over-year circle
 });
 
 function wrap(text, width) {

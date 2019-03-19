@@ -1,3 +1,11 @@
 text {
     'font-family': 'Arial';
 }
+
+line.connector {
+    stroke: grey;
+    stroke-dasharray: 3;
+}
+line.YoY {
+    stroke: #231F20;
+}
