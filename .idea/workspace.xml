@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="50798a7c-a11f-43db-9d25-1fc9e8e5b3b3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/waterfall.html" beforeDir="false" afterPath="$PROJECT_DIR$/waterfall.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/waterfall.js" beforeDir="false" afterPath="$PROJECT_DIR$/waterfall.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -19,8 +18,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/waterfall.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="250">
-              <caret line="31" column="16" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="16" />
+            <state relative-caret-position="311">
+              <caret line="70" column="31" selection-start-line="70" selection-start-column="31" selection-end-line="70" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="15">
+                <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -66,6 +77,7 @@
         <option value="$PROJECT_DIR$/waterfall.css" />
         <option value="$PROJECT_DIR$/waterfall.html" />
         <option value="$PROJECT_DIR$/sample_data.csv" />
+        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/waterfall.js" />
       </list>
     </option>
@@ -135,12 +147,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1552934544798</updated>
-      <workItem from="1552934546031" duration="7755000" />
+      <workItem from="1552934546031" duration="10093000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7755000" />
+    <option name="totallyTimeSpent" value="10093000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="960" extended-state="0" />
@@ -183,6 +195,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="15">
+            <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/sample_data.csv">
       <provider selected="true" editor-type-id="csv-text-editor">
         <state relative-caret-position="120">
@@ -195,8 +217,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/waterfall.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="31" column="16" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="16" />
+        <state relative-caret-position="311">
+          <caret line="70" column="31" selection-start-line="70" selection-start-column="31" selection-end-line="70" selection-end-column="31" />
         </state>
       </provider>
     </entry>
