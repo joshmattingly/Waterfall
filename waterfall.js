@@ -1,8 +1,8 @@
 
 var margin = {top: 160, right: 10, bottom: 80, left: 70};
 
-var width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var width = 1000 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -10,7 +10,7 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var symbol = d3.Symbol();
+var symbol = d3.symbol();
 
 
 d3.csv("sample_data.csv").then(function(dataset){
@@ -50,6 +50,23 @@ d3.csv("sample_data.csv").then(function(dataset){
 
     let xAxis = d3.axisBottom(xScale);
 
+    let barWidth = (width / dataset.length);
+    let barWidthPadding = 15;
+    let volumeLabelOffset = 31;
+    let volumeFontSize = 14;
+    let labelFontSize = 12;
+    let textXpadding = 10;
+    let textYpadding = 3;
+    let numDec = 1;
+    let yoyVertPad = 30;
+    let arrowHeadSize = 75;
+    let arrowHeadXpad = 30;
+    let arrowHeadYpad = 6;
+    let horizonLineX1Pad = 5.5;
+    let horizonLineX2Pad = 46.5;
+    let ellipseRadius = 35;
+    let ellipseTextPad = 5;
+
     // create the bars. Fill is based on whether increase/decrease or start/end
     svg.selectAll('rect')
         .data(dataset)
@@ -58,7 +75,7 @@ d3.csv("sample_data.csv").then(function(dataset){
         .attr("x", (d,i) => i * (width / dataset.length))
         .attr("y", d => yScale(Math.max(d.start, d.end)))
         .attr("height", d => Math.abs(yScale(d.end) - yScale(d.start)))
-        .attr("width", (width / dataset.length)-20)
+        .attr("width", barWidth-barWidthPadding)
         .attr('fill', function(d){
             if(d.Category == 'Last Year' || d.Category == 'Current Year'){
                 return '#BFB8BF';
@@ -82,28 +99,28 @@ d3.csv("sample_data.csv").then(function(dataset){
         .data(dataset)
         .enter()
         .append("text")
-        .attr("x", function(d, i){ return i * (width / dataset.length) + 10; })
-        .attr("y", d => yScale(Math.max(d.start, d.end)))
+        .attr("x", function(d, i){ return i * (width / dataset.length) + textXpadding; })
+        .attr("y", d => yScale(Math.max(d.start, d.end)) - textYpadding)
         .text(function(d){
             if (d.PctChg != 0){
                 let num = d.PctChg * 100;
                 if(d.PctChg > 0) {
-                    return "+" + num.toFixed(1).toString() + "%";
+                    return "+" + num.toFixed(numDec).toString() + "%";
                 } else {
-                    return num.toFixed(1).toString() + "%";
+                    return num.toFixed(numDec).toString() + "%";
                 }
             } else {
                 return;
             };
         })
-        .attr("font-size", "12px");
+        .attr("font-size", labelFontSize);
 
     // add the start and ending volume numbers. label centered based on height.
     svg.append("g").selectAll("text")
         .data(dataset)
         .enter()
         .append("text")
-        .attr("x", (d,i) => i * (width / dataset.length) + 25)
+        .attr("x", (d,i) => i * (width / dataset.length) + volumeLabelOffset)
         .attr("y", height / 2)
         .text(function(d){
             if (d.Category == 'Last Year' || d.Category == 'Current Year'){
@@ -112,6 +129,7 @@ d3.csv("sample_data.csv").then(function(dataset){
             };
         })
         .attr("fill", "#231F20")
+        .attr("font-size", volumeFontSize)
         .attr("text-anchor", "middle");
 
     // create connector lines
@@ -120,7 +138,7 @@ d3.csv("sample_data.csv").then(function(dataset){
         .enter()
         .append('line')
         .attr("class", "connector")
-        .attr("x1", (d,i) => i * (width/dataset.length) + ((width / dataset.length)-20))
+        .attr("x1", (d,i) => i * (width/dataset.length) + ((width / dataset.length)-barWidthPadding))
         .attr("y1", d => yScale(d.end))
         .attr("x2", (d,i) => (i+1) * (width/dataset.length))
         .attr("y2", d => yScale(d.end));
@@ -139,9 +157,28 @@ d3.csv("sample_data.csv").then(function(dataset){
         })
         .attr("y1", d => yScale(d.end))
         .attr("y2", -(margin.top/2))
-        .attr("x1", (d,i) => (i * width / dataset.length) + 30)
-        .attr("x2", (d,i) => (i * width / dataset.length) + 30);
+        .attr("x1", (d,i) => (i * width / dataset.length) + yoyVertPad)
+        .attr("x2", (d,i) => (i * width / dataset.length) + yoyVertPad);
 
+    // add arrowhead to current year
+    svg.append("g")
+        .attr("class", "arrowhead")
+        .selectAll('.points')
+        .data(dataset)
+        .enter()
+        .append('path')
+        .attr("d", symbol.size(arrowHeadSize).type(d3.symbolTriangle))
+        .attr("fill", function(d){
+            if(d.Category == 'Current Year') {
+                return "#231F20";
+            } else{
+                return "none";
+            }
+        })
+        .attr("transform",function(d,i){
+            return "translate(" + ((i * width / dataset.length) + arrowHeadXpad) + ", "
+                + (yScale(d.end) - arrowHeadYpad) + ") rotate(180)"
+        });
 
     // creating the year-over-year change horizontal line
     svg.append("g").selectAll('line')
@@ -157,23 +194,24 @@ d3.csv("sample_data.csv").then(function(dataset){
         })
         .attr("y1", -(margin.top/2))
         .attr("y2", -(margin.top/2))
-        .attr("x1", margin.left / 2 - 5.5)
-        .attr("x2", width - 42.5);
+        .attr("x1", margin.left / 2 - horizonLineX1Pad)
+        .attr("x2", width - horizonLineX2Pad);
 
 
     // add the year-over-year circle
     svg.append("g")
-        .append("circle")
+        .append("ellipse")
         .attr("cx", width / 2)
         .attr("cy", 0 - (margin.top / 2))
-        .attr("r", 35)
+        .attr("rx", ellipseRadius)
+        .attr("ry", ellipseRadius/2)
         .attr("fill", "white")
         .attr("stroke", "black");
 
     svg.append("g")
         .append("text")
         .attr("x", (width / 2))
-        .attr("y", 0 - (margin.top / 2) + 5)
+        .attr("y", 0 - (margin.top / 2) + ellipseTextPad)
         .attr("text-anchor", "middle")
         .text("-3.5%");
 
