@@ -1,8 +1,8 @@
 
-var margin = {top: 160, right: 10, bottom: 80, left: 73};
+var margin = {top: 60, right: 10, bottom: 80, left: 73};
 
 var width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 300 - margin.top - margin.bottom;
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -13,11 +13,13 @@ var svg = d3.select("body").append("svg")
 
 d3.csv("sample_data.csv").then(function(dataset){
 
+    // make sure volume and percent change columns are numbers
     dataset.forEach(function(d){
         d.Volume = +d.Volume;
         d.PctChg = +d.PctChg;
     });
 
+    // create the waterfall framework (store the start and end location of each bar, with flag stating pos or neg)
     let cumulative = 0;
     for (let i = 0; i < dataset.length; i++){
         dataset[i].start = cumulative;
@@ -26,17 +28,18 @@ d3.csv("sample_data.csv").then(function(dataset){
 
         dataset[i].class = (dataset[i].value >= 0) ? 'positive' : 'negative';
     }
+
+    // create the final ('ending') column
     dataset.push({
         Category: 'Current Year',
         end: cumulative,
         start: 0,
+        PctChg: 0,
         class: 'total'
     });
 
-    console.log(dataset);
-
     let yScale = d3.scaleLinear()
-        .domain([0, d3.max(dataset, function(d){ return d.end; })])
+        .domain([0, d3.max(dataset, d => d.end)])
         .range([height, 0]);
 
     let xScale = d3.scaleBand()
@@ -44,36 +47,72 @@ d3.csv("sample_data.csv").then(function(dataset){
         .range([0, width]);
 
     let xAxis = d3.axisBottom(xScale);
-    let yAxis = d3.axisLeft(yScale);
 
+    // create the bars. Fill is based on whether increase/decrease or start/end
     svg.selectAll('rect')
         .data(dataset)
         .enter()
         .append('rect')
-        .attr("x", function(d,i){ return i * (width / dataset.length); })
-        .attr("y", function(d){return yScale(Math.max(d.start, d.end)); })
-        .attr("height", function(d){ return Math.abs(yScale(d.end) - yScale(d.start)); })
+        .attr("x", (d,i) => i * (width / dataset.length))
+        .attr("y", d => yScale(Math.max(d.start, d.end)))
+        .attr("height", d => Math.abs(yScale(d.end) - yScale(d.start)))
         .attr("width", (width / dataset.length)-8)
         .attr('fill', function(d){
             if(d.Category == 'Last Year' || d.Category == 'Current Year'){
-                return 'grey';
+                return '#BFB8BF';
             };
             if(d.PctChg >=0){
-                return '#78BE20';
+                return '#62BB46';
             } else {
-                return '#FC952E';
+                return '#EA5329';
             };
         });
 
+    // call the xAxis and wrap the text
     svg.append("g")
         .call(xAxis)
         .attr("transform", "translate(0, " + height + ")")
         .selectAll(".tick text")
         .call(wrap, xScale.bandwidth());
 
-    svg.append("g")
-        .call(yAxis)
-        .selectAll(".tick text");
+    // add the percent change labels and center on the top of the bars.
+    svg.append("g").selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("x", function(d, i){ return i * (width / dataset.length) + 16; })
+        .attr("y", d => yScale(Math.max(d.start, d.end)))
+        .text(function(d){
+            if (d.PctChg != 0){
+                let num = d.PctChg * 100;
+                if(d.PctChg > 0) {
+                    return "+" + num.toFixed(1).toString() + "%";
+                } else {
+                    return num.toFixed(1).toString() + "%";
+                }
+            } else {
+                return;
+            };
+        })
+        .attr("font-size", "12px");
+
+    // add the start and ending volume numbers. label centered based on height.
+    svg.append("g").selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("x", (d,i) => i * (width / dataset.length))
+        .attr("y", height / 2)
+        .text(function(d){
+            if (d.Category == 'Last Year' || d.Category == 'Current Year'){
+                let volume = d.Volume;
+                return volume.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            };
+        })
+        .attr("fill", "#231F20")
+        .attr("text-anchor", "middle");
+
+
 });
 
 function wrap(text, width) {
