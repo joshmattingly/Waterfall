@@ -10,6 +10,8 @@ var svg = d3.select("body").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var symbol = d3.Symbol();
+
 
 d3.csv("sample_data.csv").then(function(dataset){
 
@@ -160,6 +162,21 @@ d3.csv("sample_data.csv").then(function(dataset){
 
 
     // add the year-over-year circle
+    svg.append("g")
+        .append("circle")
+        .attr("cx", width / 2)
+        .attr("cy", 0 - (margin.top / 2))
+        .attr("r", 35)
+        .attr("fill", "white")
+        .attr("stroke", "black");
+
+    svg.append("g")
+        .append("text")
+        .attr("x", (width / 2))
+        .attr("y", 0 - (margin.top / 2) + 5)
+        .attr("text-anchor", "middle")
+        .text("-3.5%");
+
 });
 
 function wrap(text, width) {
